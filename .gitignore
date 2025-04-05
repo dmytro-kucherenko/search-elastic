@@ -1,0 +1,12 @@
+# Editor
+.vscode
+
+# Temporary
+tmp
+
+# Build
+bin
+vendor
+
+# Environment
+.env

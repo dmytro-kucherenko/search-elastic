@@ -1,0 +1,38 @@
+services:
+  elasticsearch:
+    image: elastic/elasticsearch:7.17.1
+    restart: unless-stopped
+    container_name: LanguageContainer
+    ports:
+      - '${DB_PORT}:9200'
+    environment:
+      - ELASTIC_PASSWORD=${DB_PASSWORD}
+      - cluster.name=${DB_CLUSTER_NAME}
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    env_file:
+      - .env
+    volumes:
+      - language-data:/var/lib/elasticsearch/language-data/elasticsearch
+
+  kibana:
+    image: elastic/kibana:7.17.1
+    restart: unless-stopped
+    container_name: KibanaContainer
+    ports:
+      - '${KIBANA_PORT}:5601'
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:${DB_PORT}
+      - ELASTICSEARCH_USERNAME=${DB_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - elasticsearch
+    env_file:
+      - .env
+    volumes:
+      - language-data:/var/lib/elasticsearch/language-data/kibana
+
+volumes:
+  language-data:
